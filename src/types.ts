@@ -4,5 +4,6 @@ export type RootStackParamList = {
     Home: undefined;
     Survey: undefined;
     Result: { surveyResults: number[] };
+    JobDetail: undefined;
   };
   

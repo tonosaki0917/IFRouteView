@@ -6,6 +6,7 @@ import RegistrationScreen from './src/screens/RegistrationScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import SurveyScreen from './src/screens/SurveyScreen';
 import ResultScreen from './src/screens/ResultScreen';
+import JobDetailScreen from './src/screens/JobDetailScreen';
 import { RootStackParamList } from './src/types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -19,6 +20,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Survey" component={SurveyScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="Result" component={ResultScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="JobDetail" component={JobDetailScreen} options={{ headerShown: false }}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

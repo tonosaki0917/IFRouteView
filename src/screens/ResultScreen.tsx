@@ -2,13 +2,21 @@
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { deleteApp } from 'firebase/app';
 
 export default function ResultScreen({ route, navigation }: any) {
 
   // 紹介する職業のリスト
-  const jobs = [
-    {name: '通訳者', image: require('../../assets/jobs/tsuuyaku.png'), description: "異なる言語を使う人たちの間に入って、話し手の言葉を聞き手が使う言語に変換する人！"},
-    {name: '小説家', image: require('../../assets/jobs/write.png'), description: "物語を創作して小説を執筆する人！\n印税で生計を立てる人が多いね。"}
+  var jobs = [
+    {name: '通訳者', image: require('../../assets/jobs/tsuuyaku.png'), 
+      overview: "異なる言語を使う人たちの間に入って、話し手の言葉を聞き手が使う言語に変換する人！",
+      detail: "ああああああああああああああああああああああああああああ",
+      interestRate: 0},
+    {name: '小説家', image: require('../../assets/jobs/write.png'), 
+      overview: "物語を創作して小説を執筆する人！\n印税で生計を立てる人が多いね。",
+      detail: "ああああああああああああああああああああああああああああ",
+      interestRate: 0}
   ]
 
 
@@ -30,6 +38,16 @@ export default function ResultScreen({ route, navigation }: any) {
     id = 1;
   }
 
+  // 選択した職業を保存
+  const handleInterested = async () => {
+    const currentFavorites = await AsyncStorage.getItem('favoriteJobs');
+    const updatedFavorites = currentFavorites ? JSON.parse(currentFavorites) : [];
+    jobs[id].interestRate = result;
+    updatedFavorites.push(jobs[id]);
+    await AsyncStorage.setItem('favoriteJobs', JSON.stringify(updatedFavorites));
+    navigation.navigate('JobDetail', { name: jobs[id].name , detail: jobs[id].detail});
+  };
+
   return (
     <LinearGradient
       colors={['#f5f7fa', '#c3cfe2']}
@@ -45,10 +63,10 @@ export default function ResultScreen({ route, navigation }: any) {
       
       <Text style={styles.title}>{jobs[id].name}</Text>
       <Image style={styles.image} source={jobs[id].image} />
-      <Text style={styles.description}>{jobs[id].description}</Text>
+      <Text style={styles.overview}>{jobs[id].overview}</Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.interestedButton]} onPress={() => { /* ここに「気になる！」ボタンの処理を追加 */ }}>
+        <TouchableOpacity style={[styles.button, styles.interestedButton]} onPress={handleInterested}>
             <Text style={styles.buttonText}>気になる！</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.notInterestedButton]} 
@@ -82,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 125,
     borderWidth: 1,
   },
-  description: {
+  overview: {
     fontSize: 18,
     color: '#555',
     textAlign: 'center',
