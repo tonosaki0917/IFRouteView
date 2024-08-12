@@ -13,7 +13,7 @@ export default function ResultScreen({ route, navigation }: any) {
       interestRate: 0},
     {name: '小説家', image: require('../../assets/jobs/write.png'), 
       overview: "物語を創作して小説を執筆する人！\n印税で生計を立てる人が多いね。",
-      detail: "ああああああああああああああああああああああああああああ",
+      detail: "SNSなどで創作物を発表してみよう！",
       interestRate: 0}
   ]
 

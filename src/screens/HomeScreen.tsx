@@ -3,6 +3,8 @@ import { Alert, View, Text, ImageBackground, FlatList, StyleSheet, TouchableOpac
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { auth } from '../firebaseConfig';
+import { signOut } from 'firebase/auth';
 
 interface Job {
   name: string;
@@ -16,6 +18,17 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
   const [expandedItems, setExpandedItems] = useState(new Set());
+
+  // ログアウト処理
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        navigation.navigate('Login');
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   // アンケート結果をロードして、職業リストを更新
   const loadSurveyResults = async () => {
@@ -107,9 +120,14 @@ export default function HomeScreen() {
       style={styles.container}
     >
     <View style={styles.container}>
-      <TouchableOpacity style={styles.profileIcon} onPress={() => navigation.navigate('Profile')}>
-        <Image source={require('../../assets/prof.png')} style={styles.profileImage} />
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.logoutIcon} onPress={handleLogout}>
+          <Image source={require('../../assets/logout.png')} style={styles.logoutImage} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.profileIcon} onPress={() => navigation.navigate('Profile')}>
+          <Image source={require('../../assets/prof.png')} style={styles.profileImage} />
+        </TouchableOpacity>
+      </View>
       <Text style={styles.title}>気になる職業リスト</Text>
       <FlatList
         data={favoriteJobs}
@@ -145,6 +163,12 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingHorizontal: 20,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // 左右にスペースを均等に配置
+    marginBottom: 20,
+  },
   profileIcon: {
     alignSelf: 'flex-end',
     padding: 8,
@@ -154,6 +178,15 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 30,
     height: 30,
+    resizeMode: 'contain',
+  },
+  logoutIcon: {
+    alignSelf: 'flex-end',
+    marginRight: 10, // 左端から少しスペースを作る
+  },
+  logoutImage:{
+    width: 40,
+    height: 40,
     resizeMode: 'contain',
   },
   title: {

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function RPGConversation({ story = {scenes:[]}, onStoryEnd }) {
   const [currentScene, setCurrentScene] = useState(0);
@@ -16,7 +14,7 @@ export default function RPGConversation({ story = {scenes:[]}, onStoryEnd }) {
     setIndex(0);
   }, [scene.dialogue]);
 
-  // RPGっぽい文字の出力
+  // RPGっぽい文字の出力(1文字ずつ出力)
   useEffect(() => {
     if (index < scene.dialogue.length) {
       const timer = setTimeout(() => {
