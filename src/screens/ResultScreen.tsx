@@ -1,9 +1,7 @@
-// src/screens/ResultScreen.tsx
 import React from 'react';
 import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { deleteApp } from 'firebase/app';
 
 export default function ResultScreen({ route, navigation }: any) {
 
@@ -11,7 +9,7 @@ export default function ResultScreen({ route, navigation }: any) {
   var jobs = [
     {name: '通訳者', image: require('../../assets/jobs/tsuuyaku.png'), 
       overview: "異なる言語を使う人たちの間に入って、話し手の言葉を聞き手が使う言語に変換する人！",
-      detail: "ああああああああああああああああああああああああああああ",
+      detail: "通訳者には高い語学力が必要です！\n週に1回模擬試験を受けるなど、結果を分析して弱点を補強しましょう！\n\n英語ディスカッションが行われる\nオンラインコミュニティ\n（例: Redditの英語ディスカッショングループ）\nに参加してみよう！\n\n法律に関する通訳であれば、\n専門知識や実際の現場を知るために\n法廷の見学をしてみよう！",
       interestRate: 0},
     {name: '小説家', image: require('../../assets/jobs/write.png'), 
       overview: "物語を創作して小説を執筆する人！\n印税で生計を立てる人が多いね。",
@@ -27,7 +25,8 @@ export default function ResultScreen({ route, navigation }: any) {
   // 評価率の計算
   var sum = 0;
   for(var x of surveyResults) sum += x;
-  const result = (sum / (surveyResults.length * 5) * 100);
+  var result = (sum / (surveyResults.length * 5) * 100);
+  result = Math.round(result * 10) / 10;
   
   console.log(result)
 
@@ -45,6 +44,7 @@ export default function ResultScreen({ route, navigation }: any) {
     jobs[id].interestRate = result;
     updatedFavorites.push(jobs[id]);
     await AsyncStorage.setItem('favoriteJobs', JSON.stringify(updatedFavorites));
+    alert("この職業になるために必要なことを見てみよう！");
     navigation.navigate('JobDetail', { name: jobs[id].name , detail: jobs[id].detail});
   };
 
@@ -54,12 +54,9 @@ export default function ResultScreen({ route, navigation }: any) {
       style={styles.container}
     >
     <View style={styles.container}>
-      <Text style={styles.title}>Survey Results</Text>
-      {surveyResults.map((stars: number, index: number) => (
-        <Text key={index}>Event {index + 1}: {stars} / 5 stars</Text>
-      ))}
-      <Text>このストーリーでの評価は{result}%でした！</Text>
-      <Text>あなたにオススメする職業は...</Text>
+      <Text style={styles.title}>ストーリー終了！</Text>
+      <Text style={styles.text}>このストーリーでの評価は{result}%でした！</Text>
+      <Text style={styles.text}>あなたにオススメする職業は...</Text>
       
       <Text style={styles.title}>{jobs[id].name}</Text>
       <Image style={styles.image} source={jobs[id].image} />
@@ -90,8 +87,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
+    marginTop:5,
     marginBottom: 20,
     textAlign: 'center',
+  },
+  text:{
+    marginBottom: 5,
   },
   image: {
     width: 250,
@@ -99,6 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 125,
     borderWidth: 1,
+    backgroundColor: '#FFF',
   },
   overview: {
     fontSize: 18,

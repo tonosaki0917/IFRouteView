@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Alert, View, Text, ImageBackground, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Job {
   name: string;
@@ -16,22 +17,27 @@ export default function HomeScreen() {
   const [favoriteJobs, setFavoriteJobs] = useState<Job[]>([]);
   const [expandedItems, setExpandedItems] = useState(new Set());
 
-  useEffect(() => {
-    const fetchFavoriteJobs = async () => {
-      const jobs = await AsyncStorage.getItem('favoriteJobs');
-      if (jobs) {
-        const parsedJobs: Job[] = JSON.parse(jobs);
-        // 重複した職業を除外
-        const uniqueJobs = parsedJobs.filter((job, index, self) =>
-          index === self.findIndex((j) => j.name === job.name)
-        );
-        parsedJobs.sort((a, b) => b.interestRate - a.interestRate);
-        setFavoriteJobs(uniqueJobs);
-      }
-    };
+  // アンケート結果をロードして、職業リストを更新
+  const loadSurveyResults = async () => {
+    const jobs = await AsyncStorage.getItem('favoriteJobs');
+    if (jobs) {
+      const parsedJobs: Job[] = JSON.parse(jobs);
+      // 重複した職業を除外
+      const uniqueJobs = parsedJobs.filter((job, index, self) =>
+        index === self.findIndex((j) => j.name === job.name)
+      );
+      parsedJobs.sort((a: Job, b: Job) => b.interestRate - a.interestRate);
+      setFavoriteJobs(uniqueJobs);
+    }
+  };
 
-    fetchFavoriteJobs();
-  }, []);
+  useEffect(() => {
+    const focusListener = navigation.addListener('focus', () => {
+      loadSurveyResults();
+    });
+
+    return focusListener;
+  }, [navigation]);
 
   const handleExpand = (job) => {
     const newExpandedItems = new Set(expandedItems);
@@ -56,13 +62,13 @@ export default function HomeScreen() {
       "この職業を削除してもよろしいですか？",
       [
         { text: "キャンセル", style: "cancel" },
-        { text: "削除", onPress: () => {removeJob(job); console.log(`${job.name}が削除されました。`)} }
+        { text: "削除", onPress: () => {removeJob(job); alert(`${job.name}が削除されました。`)} }
       ]
     );
   };
 
   console.log("favoriteJobs:", favoriteJobs)
-  const message = "これからお見せする内容は、あなたに起こりうる未来を想定したストーリーです。\nこのシーンが魅力的かを評価してください！";
+  const message = "このストーリーでは、あなたに起こるかもしれない未来を想定しています。\nこのストーリーの魅力度を評価してください！";
 
   // 職業の概要表示と詳細説明への移動
   const renderProfession = ({ item }) => (
@@ -96,6 +102,10 @@ export default function HomeScreen() {
   );
 
   return (
+    <LinearGradient
+      colors={['#f5f7fa', '#c3cfe2']}
+      style={styles.container}
+    >
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileIcon} onPress={() => navigation.navigate('Profile')}>
         <Image source={require('../../assets/prof.png')} style={styles.profileImage} />
@@ -108,7 +118,6 @@ export default function HomeScreen() {
         contentContainerStyle={styles.professionList}
       />
       <TouchableOpacity 
-        style={styles.startButton} 
         onPress={() => {
           Alert.alert(
             "ご説明", message,
@@ -119,9 +128,12 @@ export default function HomeScreen() {
           )
         }}
       >
+        <ImageBackground source={require('../../assets/watercolor.jpg')} style={styles.startButton} >
         <Text style={styles.startButtonText}>ストーリー開始</Text>
+        </ImageBackground>
       </TouchableOpacity>
     </View>
+    </LinearGradient>
   );
 }
 
@@ -129,17 +141,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center', // 縦方向に中央揃え
-    paddingTop: 50,
+    paddingTop: 40,
     paddingBottom: 50,
     paddingHorizontal: 20,
   },
   profileIcon: {
     alignSelf: 'flex-end',
-    marginBottom: 20,
+    padding: 8,
+    borderWidth: 1.5,
+    borderRadius: 200,
   },
   profileImage: {
     width: 30,
     height: 30,
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 24,
@@ -182,10 +197,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   interestRate: {
-    fontSize: 18,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#ff6b6b',
-    marginLeft: 5,
+    marginLeft: 0,
   },
   moreButton: {
     paddingHorizontal: 10,
@@ -231,22 +246,24 @@ const styles = StyleSheet.create({
     color: '#FF69B4',
   },
   startButton: {
-    height: 180,
+    height: 200,
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 0,
     alignSelf: 'center',
-    backgroundColor: '#FF00FF',
     paddingVertical: 15,
-    paddingHorizontal: 60,
+    paddingHorizontal: 75,
+    borderWidth: 1,
+    borderColor: '#CCC',
     borderRadius: 10,
+    overflow: 'hidden',
     alignItems: 'center',
   },
   startButtonText: {
     flex: 1,
-    color: '#FFF',
+    color: '#000',
     fontSize: 24,
     fontWeight: 'bold',
     justifyContent: 'center',
-    marginTop: 55,
+    marginTop: 65,
   },
 });

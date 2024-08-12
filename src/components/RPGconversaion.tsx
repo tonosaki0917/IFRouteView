@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function RPGConversation({ story = {scenes:[]}, onStoryEnd }) {
   const [currentScene, setCurrentScene] = useState(0);
@@ -54,36 +56,47 @@ export default function RPGConversation({ story = {scenes:[]}, onStoryEnd }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end', // 下側に配置
     alignItems: 'center',
+    aspectRatio: 9 / 16,
+    width: '90%',
+    borderWidth: 1,
+    marginBottom: 160,
   },
   background: {
-    width: '90%',
-    height: '90%',
-    position: 'absolute',
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   dialogueContainer: {
-    width: '80%',
-    position: 'absolute',
-    bottom: 80,
+    width: '100%',
+    padding: 10,
+    justifyContent: 'flex-end',
   },
   character: {
-    width: 200,
-    height: 200,
+    position: 'absolute',
+    bottom: 40,
+    left: '25%',
+    transform: [{ translateX: -75 }],
+    width: 300,
+    height: 300,
+    resizeMode: 'contain',
   },
   textContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    marginTop: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 5,
   },
   speaker: {
-    fontSize: 18,
+    fontWeight: 'bold',
     color: '#fff',
+    fontSize: 16,
     marginBottom: 5,
   },
   dialogue: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#fff',
   },
 });
